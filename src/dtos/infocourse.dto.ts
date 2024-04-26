@@ -1,13 +1,11 @@
-import { IsNotEmpty } from "class-validator";
-
 export class InfoCourseDTO {
     title : string;
 
-    description : string;
+    description? : string;
 
-    rating : number;
+    rating? : number;
 
-    numberOfLessons : number;
+    numberOfLessons? : number;
 
-    numberOfParticipants : number;
+    numberOfParticipants? : number;
 }

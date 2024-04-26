@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Course } from "./course.entity";
 import { Learning } from "./learning.entity";
 
@@ -8,12 +8,16 @@ export class Lesson extends BaseEntity {
     id : number;
     
     @Column()
-    title: String;
+    title: string;
 
     @Column()
-    description: String;
+    description: string;
+
+    @Column({default : 1})
+    type : number
 
     @ManyToOne(() => Course, course => course.lessons)
+    @JoinColumn({name : 'course_id'})
     course: Course;
     
     @CreateDateColumn({

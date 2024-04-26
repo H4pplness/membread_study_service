@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { StudyBaseService } from "./study-base.service";
 import { Vocabulary } from "src/dtos/vocabulary.dto";
+import { LessonRepository } from "src/repositories/lesson.repository";
 
 @Injectable()
-export class StudyVocabularyService implements StudyBaseService<Vocabulary> {
+export class StudyVocabularyService{
+    constructor(
+        private readonly lessonRepository : LessonRepository,
+    ){}
+
     getLesson(lesson_id : number): Vocabulary[] {
         throw new Error("Method not implemented.");
     }
@@ -16,5 +20,4 @@ export class StudyVocabularyService implements StudyBaseService<Vocabulary> {
     setGoal(): number {
         throw new Error("Method not implemented.");
     }
-
 }

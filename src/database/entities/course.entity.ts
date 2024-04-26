@@ -9,36 +9,38 @@ export class Course extends BaseEntity{
     @Column()
     title : String; 
 
-    @Column({nullable : true})
-    author_id : number;
+    @Column({nullable : true,name : 'author_id'})
+    authorId : number;
     
     @Column({nullable : true})
     description : String 
 
-    @Column({type : "integer" , nullable : true})
+    @Column({type : "integer" , nullable : true , name : 'number_of_participants'})
     numberOfParticipants : number
 
-    @Column({type : "integer" ,  nullable : true})
+    @Column({type : "integer" ,  nullable : true , name : 'number_of_lessons'})
     numberOfLessons : number 
 
     @Column({type : "float" , default : 5})
     rating : number
 
-    @OneToMany(type => Lesson , lesson => lesson.course)
+    @OneToMany(() => Lesson , lesson => lesson.course , {cascade : true})
     lessons : Lesson[]
 
     @CreateDateColumn({
         default : 'now()',
-        nullable : true
+        nullable : true,
+        name : 'created_at'
     })
-    created_at : Date
+    createdAt : Date
 
     @UpdateDateColumn({
         default : 'now()',
-        nullable : true
+        nullable : true,
+        name : 'updated_at'
     })
-    updated_at : Date
+    updatedAt : Date
 
-    @DeleteDateColumn()
+    @DeleteDateColumn({name : 'delete_at'})
     deleteAt : Date
 }
