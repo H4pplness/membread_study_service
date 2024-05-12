@@ -5,10 +5,12 @@ import { Course } from "src/database/entities/course.entity";
 import { Learning } from "src/database/entities/learning.entity";
 import { LearningAttribute } from "src/database/entities/learning_attribute.entity";
 import { Lesson } from "src/database/entities/lesson.entity";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, Int32, Repository } from "typeorm";
 import { CreateLessonDTO } from "../dtos/create-lessons/createlesson.dto";
 import { CreateLessonVocabularyDTO } from "../dtos/create-lessons/createlessonvocabulary.dto";
 import { LEARNING_TYPE, getLearningType } from "src/database/const/learning-type.const";
+import { UpdateProgressLessonVocabularyDTO } from "../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto";
+import { CourseProgress } from "src/database/entities/course_progress.entity";
 
 @Injectable()
 export class VocabularyRepository {
@@ -23,12 +25,15 @@ export class VocabularyRepository {
         private readonly attributeRepository : Repository<Attribute>,
         @InjectRepository(LearningAttribute)
         private readonly learningAttributeRepository : Repository<LearningAttribute>,
+        @InjectRepository(CourseProgress)
+        private readonly courseProgressRepository : Repository<CourseProgress>,
         @InjectDataSource()
         private dataSource : DataSource
     ){}
 
     async createLesson(createLesson : CreateLessonVocabularyDTO)
     {
+        console.log("COURSE ID :",createLesson.courseId)
         const course = await this.courseRepository.findOne({
             where : { id : createLesson.courseId}
         })
@@ -49,11 +54,13 @@ export class VocabularyRepository {
         const vocabulary_attr = await Attribute.findOne({where : {id : 1}});
         const mean_attr = await Attribute.findOne({where : {id : 2}});
 
-        createLesson.listVocabulary.forEach(async (vocabulary)=>{
+        for (const vocabulary of createLesson.listVocabulary){
             const learning = new Learning();
             learning.lesson = lesson;
             learning.learningType = await getLearningType(LEARNING_TYPE.VOCABULARY);
             learnings.push(learning);
+
+            console.log("VOCABULARY : ",vocabulary);
 
             const learningVocabulary = new LearningAttribute();
             const learningMean = new LearningAttribute();
@@ -68,7 +75,7 @@ export class VocabularyRepository {
 
             learning_attributes.push(learningVocabulary);
             learning_attributes.push(learningMean);
-        })
+        }
 
         await this.learningRepository.save(learnings);
         await this.learningAttributeRepository.save(learning_attributes);
@@ -107,7 +114,7 @@ export class VocabularyRepository {
         .getRawMany();
     }
 
-    async getPracticeLesson(lesson_id : number,numberOfLearning : number){
+    public async getPracticeLesson(lesson_id : number,numberOfLearning : number){
         return await this.dataSource.createQueryBuilder(Learning,'learning')
         .select('learning.learning_type as type,learning.id as id')
         .addSelect('learning_attribute.value as value')
@@ -120,5 +127,22 @@ export class VocabularyRepository {
         .orderBy('course_progress.id')
         .limit(numberOfLearning*2)
         .getRawMany();
+    }
+
+    public async updateStudyLesson(updateLesson : UpdateProgressLessonVocabularyDTO){
+        const list_progress : CourseProgress[] = [];
+
+        updateLesson.listVocabulary.forEach((voca_progress)=>{
+            const progress = new CourseProgress();
+            progress.learningId = voca_progress.learning_id;
+            progress.participantId = updateLesson.user_id;
+            progress.progress = voca_progress.progress;
+            progress.lastUpdated = new Date();
+            list_progress.push(progress);
+        })
+
+        await this.courseProgressRepository.save(list_progress);
+
+        return list_progress;
     }
 }

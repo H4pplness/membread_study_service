@@ -5,8 +5,8 @@ export class Vocabulary {
     learning_id? : number;
 
     @IsString()
-    vocabulary : string;
+    vocabulary? : string;
 
     @IsString()
-    mean : string;
+    mean? : string;
 }

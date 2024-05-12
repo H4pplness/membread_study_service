@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class CourseProgress extends BaseEntity {
@@ -11,6 +11,10 @@ export class CourseProgress extends BaseEntity {
     @Column({default : 0})
     progress : number;
 
-    @Column({nullable : true,name : 'last_updated'})
+    @UpdateDateColumn({
+        default : 'now()',
+        nullable : true,
+        name : 'last_updated'
+    })
     lastUpdated : Date
 }

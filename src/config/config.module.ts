@@ -1,9 +1,4 @@
-/*
-https://docs.nestjs.com/modules
-*/
-
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -18,28 +13,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             entities: ['dist/database/entities/*.entity{.ts,.js}'],
             synchronize: true,
         }),
-        ClientsModule.register(
-            [
-                {
-                    name: 'USER_SERVICE',
-                    transport: Transport.KAFKA,
-                    options: {
-                        client: {
-                            brokers: ['locahost:9092']
-                        }
-                    }
-                },
-                {
-                    name: 'ACHIEVEMENT_SERVICE',
-                    transport: Transport.KAFKA,
-                    options: {
-                        client: {
-                            brokers: ['locahost:9092']
-                        }
-                    }
-                }
-            ]
-        )
     ],
     controllers: [],
     providers: [],

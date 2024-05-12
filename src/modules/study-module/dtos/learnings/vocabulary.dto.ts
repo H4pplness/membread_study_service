@@ -2,9 +2,9 @@
 export class VocabularyDTO {
     id? : number;
 
-    vocabulary : string;
+    vocabulary? : string;
 
-    mean : string;
+    mean? : string;
 
     progress? : number;
 

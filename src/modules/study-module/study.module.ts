@@ -5,7 +5,7 @@ https://docs.nestjs.com/modules
 import { Module } from '@nestjs/common';
 import { StudyVocabularyController } from './controllers/study-vocabulary.controller';
 import { VocabularyService } from './services/vocabulary.service';
-import { InjectDataSource, TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'src/database/entities/course.entity';
 import { Learning } from 'src/database/entities/learning.entity';
 import { Lesson } from 'src/database/entities/lesson.entity';
@@ -14,12 +14,18 @@ import { LearningAttribute } from 'src/database/entities/learning_attribute.enti
 import { CourseProgress } from 'src/database/entities/course_progress.entity';
 import { Participant } from 'src/database/entities/participant.entity';
 import { VocabularyRepository } from './repositories/vocabulary.repository';
-import { DataSource } from 'typeorm';
-import { ConfigModule } from 'src/config/config.module';
+import { ArchievementModule } from '../archievement-module/archievement.module';
+import { LessonController } from './controllers/lesson.controller';
+import { LessonService } from './services/lesson.service';
+import { LessonRepository } from './repositories/lesson.repository';
+import { ParticipantRepository } from './repositories/participant.repository';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Course, Learning, Lesson, Attribute, LearningAttribute, CourseProgress, Participant])],
-    controllers: [StudyVocabularyController],
-    providers: [VocabularyService,VocabularyRepository],
+    imports: [
+        TypeOrmModule.forFeature([Course, Learning, Lesson, Attribute, LearningAttribute, CourseProgress, Participant]),
+        ArchievementModule
+    ],
+    controllers: [StudyVocabularyController,LessonController],
+    providers: [VocabularyService,VocabularyRepository,LessonRepository,LessonService,ParticipantRepository],
 })
 export class StudyModule {}

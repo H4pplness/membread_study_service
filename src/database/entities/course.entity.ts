@@ -7,13 +7,13 @@ export class Course extends BaseEntity{
     id : number;
 
     @Column()
-    title : String; 
+    title : string; 
 
     @Column({nullable : true,name : 'author_id'})
     authorId : number;
     
     @Column({nullable : true})
-    description : String 
+    description : string 
 
     @Column({type : "integer" , nullable : true , name : 'number_of_participants'})
     numberOfParticipants : number

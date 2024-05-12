@@ -23,4 +23,7 @@ export class Participant extends BaseEntity{
     
     @DeleteDateColumn()
     delete_at : Date;
+
+    @Column({nullable : true,name : 'current_lesson'})
+    currentLesson : number
 }

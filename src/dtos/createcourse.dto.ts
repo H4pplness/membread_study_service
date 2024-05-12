@@ -1,13 +1,13 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "@nestjs/class-validator";
 
 
 export class CreateCourseDTO {
     @IsNotEmpty({message : 'Please enter title'})
     @IsString()
-    title : String;
+    title : string;
 
     @IsString()
-    description : String;
+    description : string;
 
     @IsNumber()
     author_id : number;
