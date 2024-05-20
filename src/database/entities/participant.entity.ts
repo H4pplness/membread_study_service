@@ -4,7 +4,7 @@ import { SoftDeleteQueryBuilder } from "typeorm/query-builder/SoftDeleteQueryBui
 @Entity()
 export class Participant extends BaseEntity{
     @PrimaryColumn()
-    participant_id : number;
+    participant_id : string;
 
     @PrimaryColumn()
     course_id : number;
@@ -26,4 +26,7 @@ export class Participant extends BaseEntity{
 
     @Column({nullable : true,name : 'current_lesson'})
     currentLesson : number
+
+    @Column({nullable : true})
+    last_studied : Date
 }

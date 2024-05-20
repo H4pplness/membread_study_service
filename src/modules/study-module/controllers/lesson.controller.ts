@@ -1,5 +1,6 @@
 import { Controller, Get, NotFoundException, Param, Query } from "@nestjs/common";
 import { LessonService } from "../services/lesson.service";
+import { QueryResult } from "typeorm";
 
 @Controller('course')
 export class LessonController {
@@ -8,7 +9,7 @@ export class LessonController {
     ){}
 
     @Get('info/')
-    async getCourse(@Query('course_id') courseId : number, @Query('user_id') userId : number)
+    async getCourse(@Query('course_id') courseId : number, @Query('user_id') userId : string)
     {
         if(courseId<1){
             throw new NotFoundException();
@@ -16,14 +17,10 @@ export class LessonController {
         return await this.lessonService.getCourseInfo(userId,courseId);
     }
 
-    @Get('learning/:userId')
-    async getLearningLesson(@Param() param)
+    @Get('learning')
+    async getLearningLesson(@Query('user_id') userId : string)
     {
-        if(param.userId < 1){
-            throw new NotFoundException();
-        }
-
-        return await this.lessonService.getLearningCourse(param.userId);
+        return await this.lessonService.getLearningCourse(userId);
     }
 
     @Get('teaching')

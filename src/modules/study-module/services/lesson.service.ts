@@ -16,7 +16,7 @@ export class LessonService {
         private readonly participantRepository: ParticipantRepository
     ) { }
 
-    public async getCourseInfo(userId: number, courseId: number) {
+    public async getCourseInfo(userId: string, courseId: number) {
         const courseInfo = new CourseInfoDTO();
         const course = await this.courseRepository.findOne({ where: { id: courseId } });
 
@@ -60,11 +60,11 @@ export class LessonService {
         return courseInfo;
     }
 
-    public async getLearningCourse(userId: number) {
+    public async getLearningCourse(userId: string) {
         return await this.lessonRepository.getUserLearningLesson(userId);
     }
 
-    public async getTeachingCourse(userId: number) {
+    public async getTeachingCourse(userId: string) {
         return await this.lessonRepository.getTeachingCourse(userId);
     }
 

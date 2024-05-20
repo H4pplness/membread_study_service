@@ -11,6 +11,7 @@ import { CreateLessonVocabularyDTO } from "../dtos/create-lessons/createlessonvo
 import { LEARNING_TYPE, getLearningType } from "src/database/const/learning-type.const";
 import { UpdateProgressLessonVocabularyDTO } from "../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto";
 import { CourseProgress } from "src/database/entities/course_progress.entity";
+import { Participant } from "src/database/entities/participant.entity";
 
 @Injectable()
 export class VocabularyRepository {
@@ -28,7 +29,9 @@ export class VocabularyRepository {
         @InjectRepository(CourseProgress)
         private readonly courseProgressRepository : Repository<CourseProgress>,
         @InjectDataSource()
-        private dataSource : DataSource
+        private dataSource : DataSource,
+        @InjectRepository(Participant)
+        private readonly participantRepository : Repository<Participant>
     ){}
 
     async createLesson(createLesson : CreateLessonVocabularyDTO)
@@ -141,8 +144,17 @@ export class VocabularyRepository {
             list_progress.push(progress);
         })
 
-        await this.courseProgressRepository.save(list_progress);
+        const participant = await this.participantRepository.findOne({
+            where : {
+                participant_id : updateLesson.user_id,
+                course_id : updateLesson.course_id
+            }
+        })
 
+        participant.last_studied = new Date();
+        await this.courseProgressRepository.save(list_progress);
+        await participant.save();
+        
         return list_progress;
     }
 }

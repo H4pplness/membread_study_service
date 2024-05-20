@@ -5,7 +5,7 @@ export class CourseInfoDTO {
 
     description? : string;
 
-    authorId? : number;
+    authorId? : string;
 
     listLesson ? : LessonInfo[]
 

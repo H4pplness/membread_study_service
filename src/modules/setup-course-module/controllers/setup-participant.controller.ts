@@ -9,7 +9,7 @@ export class SetupParticipantController {
     {}
 
     @Post('/join')
-    public joinCourse(@Body() body:{participant_id : number,course_id : number})
+    public joinCourse(@Body() body:{participant_id : string,course_id : number})
     {   
         return this.setupParticipantService.joinCourse(body.participant_id,body.course_id);
     }

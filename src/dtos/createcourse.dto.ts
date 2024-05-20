@@ -9,6 +9,6 @@ export class CreateCourseDTO {
     @IsString()
     description : string;
 
-    @IsNumber()
-    author_id : number;
+    @IsString()
+    author_id : string;
 } 

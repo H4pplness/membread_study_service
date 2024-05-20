@@ -23,17 +23,18 @@ export class LessonRepository extends Repository<Lesson>{
         return listLesson;
     }
 
-    async getUserLearningLesson(userId : number)
+    async getUserLearningLesson(userId : string)
     {
         return await this.dataSource.createQueryBuilder(Participant,'participant')
             .select('participant.course_id as course_id')
             .addSelect('course.title,course.description,course.rating')
             .innerJoin('course','course','participant.course_id = course.id')
-            .where('participant.participant_id = '+userId)
+            .where("participant.participant_id ='"+userId+"'")
+            .orderBy("participant.last_studied",'DESC')
             .getRawMany();
     }
 
-    async getTeachingCourse(userId : number)
+    async getTeachingCourse(userId : string)
     {
         return await this.courseRepository.find({
             where:{authorId : userId}

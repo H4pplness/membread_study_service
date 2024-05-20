@@ -8,7 +8,7 @@ export class UpdateProgressLessonDTO {
     lesson_id? : number;
 
     @IsNotEmpty()
-    user_id? : number;
+    user_id? : string;
 
     score? : number;
 }

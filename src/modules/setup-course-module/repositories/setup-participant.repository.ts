@@ -10,7 +10,7 @@ export class SetupParticipantRepository {
         private readonly participantRepository : Repository<Participant>
     ){}
 
-    public async joinCourse(participant_id: number, course_id: number) {
+    public async joinCourse(participant_id: string, course_id: number) {
         const participant = await this.participantRepository.findOne({
             where : {
                 participant_id : participant_id,

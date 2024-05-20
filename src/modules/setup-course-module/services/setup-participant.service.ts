@@ -7,7 +7,7 @@ export class SetupParticipantService {
         private readonly setupParticipantRepository : SetupParticipantRepository
     ){}
 
-    public async joinCourse(participant_id : number , course_id : number)
+    public async joinCourse(participant_id : string , course_id : number)
     {
         const result = await this.setupParticipantRepository.joinCourse(participant_id,course_id);
         return result;
