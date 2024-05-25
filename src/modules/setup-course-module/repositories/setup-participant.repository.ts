@@ -1,14 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Course } from "src/database/entities/course.entity";
 import { Participant } from "src/database/entities/participant.entity";
+import { CreateCourseDTO } from "src/dtos/createcourse.dto";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class SetupParticipantRepository {
+export class SetupParticipantRepository extends Repository<Participant>{
     constructor(
         @InjectRepository(Participant)
-        private readonly participantRepository : Repository<Participant>
-    ){}
+        private readonly participantRepository : Repository<Participant>,
+        @InjectRepository(Course)
+        private readonly courseRepository : Repository<Course>
+    ){
+        super(participantRepository.target,participantRepository.manager,participantRepository.queryRunner)
+    }
 
     public async joinCourse(participant_id: string, course_id: number) {
         const participant = await this.participantRepository.findOne({

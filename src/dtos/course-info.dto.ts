@@ -10,4 +10,8 @@ export class CourseInfoDTO {
     listLesson ? : LessonInfo[]
 
     currentLesson ? : number;
+
+    authorName? : string;
+
+    avatarUrl? : string;
 }

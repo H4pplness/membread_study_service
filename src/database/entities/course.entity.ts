@@ -43,4 +43,10 @@ export class Course extends BaseEntity{
 
     @DeleteDateColumn({name : 'delete_at'})
     deleteAt : Date
+
+    @Column({name : "lesson_type" , default : "vocabulary"})
+    lessonType : string
+
+    @Column({name : 'avatar',nullable : true})
+    avatar : string
 }

@@ -4,11 +4,11 @@ https://docs.nestjs.com/providers#services
 
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { VocabularyRepository } from '../repositories/vocabulary.repository';
-import { CreateLessonVocabularyDTO } from '../dtos/create-lessons/createlessonvocabulary.dto';
+import { CreateLessonVocabularyDTO } from '../../../dtos/create-lessons/createlessonvocabulary.dto';
 import { Lesson } from 'src/database/entities/lesson.entity';
 import { GetLessonVocabularyDTO } from 'src/dtos/getlessonvocabulary.dto';
-import { VocabularyDTO } from '../dtos/learnings/vocabulary.dto';
-import { UpdateProgressLessonVocabularyDTO } from '../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto';
+import { VocabularyDTO } from '../../../dtos/learnings/vocabulary.dto';
+import { UpdateProgressLessonVocabularyDTO } from '../../../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto';
 import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class VocabularyService {
         return await this.vocabularyRepository.createLesson(createLesson);
     }
 
-    public async getLesson(lesson_id : number)
+    public async getLesson(lesson_id : number,userId : string)
     {
         const lesson = await Lesson.findOne({where : {id : lesson_id}});
         if(!lesson)
@@ -35,7 +35,7 @@ export class VocabularyService {
         const getLesson = new GetLessonVocabularyDTO();
         getLesson.title = lesson.title;
         getLesson.description = lesson.description;
-        const learnings = await this.vocabularyRepository.getLesson(lesson_id);
+        const learnings = await this.vocabularyRepository.getLesson(lesson_id,userId);
 
         const listVocabulary : VocabularyDTO[] = []
         

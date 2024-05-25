@@ -14,7 +14,7 @@ export class Lesson extends BaseEntity {
     description: string;
 
     @Column({default : 1})
-    type : number
+    type : string
 
     @ManyToOne(() => Course, course => course.lessons)
     @JoinColumn({name : 'course_id'})

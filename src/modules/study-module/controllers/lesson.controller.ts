@@ -1,32 +1,32 @@
 import { Controller, Get, NotFoundException, Param, Query } from "@nestjs/common";
 import { LessonService } from "../services/lesson.service";
-import { QueryResult } from "typeorm";
+import { MessagePattern } from "@nestjs/microservices";
 
-@Controller('course')
+@Controller()
 export class LessonController {
     constructor(
         private readonly lessonService : LessonService
     ){}
 
-    @Get('info/')
-    async getCourse(@Query('course_id') courseId : number, @Query('user_id') userId : string)
+    @MessagePattern('get-course-info')
+    async getCourse(data : {userId : string,courseId : number})
     {
-        if(courseId<1){
+        if(data.courseId<1){
             throw new NotFoundException();
         }
-        return await this.lessonService.getCourseInfo(userId,courseId);
+        return await this.lessonService.getCourseInfo(data.userId,data.courseId);
     }
 
-    @Get('learning')
-    async getLearningLesson(@Query('user_id') userId : string)
+    @MessagePattern('learning-courses')
+    async getLearningLesson(data : {userId : string})
     {
-        return await this.lessonService.getLearningCourse(userId);
+        return await this.lessonService.getLearningCourse(data.userId);
     }
 
-    @Get('teaching')
-    async getTeachingCourse(@Query('user_id') userId : any)
+    @MessagePattern('teaching-courses')
+    async getTeachingCourse(data : {userId : string})
     {
-        console.log("USER ID : ",userId);
-        return await this.lessonService.getTeachingCourse(userId);
+        return await this.lessonService.getTeachingCourse(data.userId);
     }
+
 }

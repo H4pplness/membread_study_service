@@ -3,48 +3,78 @@ https://docs.nestjs.com/controllers#controllers
 */
 
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreateLessonVocabularyDTO } from '../dtos/create-lessons/createlessonvocabulary.dto';
+import { CreateLessonVocabularyDTO } from '../../../dtos/create-lessons/createlessonvocabulary.dto';
 import { VocabularyService } from '../services/vocabulary.service';
-import { UpdateProgressLessonVocabularyDTO } from '../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto';
+import { UpdateProgressLessonVocabularyDTO } from '../../../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto';
+import { MessagePattern } from '@nestjs/microservices';
 
-@Controller('/lesson/vocabulary-lesson')
+@Controller('')
 export class StudyVocabularyController {
     constructor(
         private readonly vocabularyService: VocabularyService
     ) { }
-    @Post('')
-    async createLessonVocabulary(@Body() createLessonVocabulary: CreateLessonVocabularyDTO) {
-        return this.vocabularyService.createLesson(createLessonVocabulary);
+    
+    /**
+     * 
+     * @param data 
+     * @returns tạo mới 1 bài học từ vựng 
+     */
+    @MessagePattern('create-lesson-vocabulary')
+    async createLessonVocabulary(data : {createLessonVocabulary: CreateLessonVocabularyDTO}) {
+        try{
+            const result = await this.vocabularyService.createLesson(data.createLessonVocabulary);
+            return "Create lesson success !";
+        }catch(error){
+            return error;
+        }
     }
 
     /**
-     * Lấy bài học từ vựng
-     * @param params id
+     *  @param params id
+     *  Lấy 1 bài học từ vựng
      */
-    @Get(':id')
-    async getLessonVocabulary(@Param() params) {
-        return await this.vocabularyService.getLesson(params.id)
+    @MessagePattern('get-lesson-vocabulary')
+    async getLessonVocabulary(data : {lessonId : number,userId : string}) {
+        try{
+            const result = await this.vocabularyService.getLesson(data.lessonId,data.userId);
+            console.log("RESULT : ",result);
+            return JSON.stringify(result);
+        }catch(error){
+            return error;
+        }
     }
 
     /**
      * Ôn tập bài học từ vựng
      * @param params id
+     * Lấy những học phần cần được ôn tập 
      */
-    @Get('practice/:id')
-    async practiceLessonVocabulary(@Param() params,@Body() body : {numberOfLearning : number}) {
-        return await this.vocabularyService.getPracticeLesson(params.id,body.numberOfLearning);
+    @MessagePattern('review-vocabulary-lesson')
+    async reviewLessonVocabulary(data : {lessonId : number,numberOfLearning : number}) {
+        return await JSON.stringify(this.vocabularyService.getPracticeLesson(data.lessonId,data.numberOfLearning));
     }
 
-    @Get('study/:id')
+    /**
+     * 
+     * @param params 
+     * @param body 
+     * @returns Lấy những học phần để học mới 
+     */
+    @MessagePattern('study-vocabulary-lesson')
     async studyLessonVocabulary(@Param() params,@Body() body: {goal : number})
     {
         return await this.vocabularyService.getStudyLesson(params.id,body.goal);
     }
 
-    @Post('update')
-    async updateProgressStudy(@Body() updateProgress : UpdateProgressLessonVocabularyDTO)
+    /**
+     * 
+     * @param data 
+     * @returns Cập nhật tiến độ học tập của khóa học từ vựng 
+     */
+    @MessagePattern('update-progress-vocabulary-lesson')
+    async updateProgressStudy(data : {updateProgress : UpdateProgressLessonVocabularyDTO})
     {
-        console.log("SCORE : ",updateProgress.score);
-        return await this.vocabularyService.setStudyLesson(updateProgress);
+        // console.log("SCORE : ",data.updateProgress.score);
+        return await this.vocabularyService.setStudyLesson(data.updateProgress);
     }
 }

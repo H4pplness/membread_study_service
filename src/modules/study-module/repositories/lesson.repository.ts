@@ -20,13 +20,16 @@ export class LessonRepository extends Repository<Lesson>{
     async getLessonByCourseId(courseId : number)
     {
         const listLesson = await this.lessonRepository.find({where : {course : {id : courseId}}});
+
+        console.log("LIST LESSON : ",JSON.stringify(listLesson,null,2));
+
         return listLesson;
     }
 
     async getUserLearningLesson(userId : string)
     {
         return await this.dataSource.createQueryBuilder(Participant,'participant')
-            .select('participant.course_id as course_id')
+            .select('participant.course_id as id')
             .addSelect('course.title,course.description,course.rating')
             .innerJoin('course','course','participant.course_id = course.id')
             .where("participant.participant_id ='"+userId+"'")

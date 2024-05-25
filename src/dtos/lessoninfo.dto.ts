@@ -9,4 +9,6 @@ export class LessonInfo {
     description? : string;
 
     courseId? : number;
+
+    type? : string;
 }

@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { LessonRepository } from "../repositories/lesson.repository";
 import { LessonInfo } from "src/dtos/lessoninfo.dto";
-import { CourseInfoDTO } from "../dtos/course-info.dto";
 import { Repository } from "typeorm";
 import { Course } from "src/database/entities/course.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ParticipantRepository } from "../repositories/participant.repository";
+import { UserService } from "src/modules/user-service-module/user.service";
 
 @Injectable()
 export class LessonService {
@@ -13,20 +13,21 @@ export class LessonService {
         @InjectRepository(Course)
         private readonly courseRepository: Repository<Course>,
         private readonly lessonRepository: LessonRepository,
-        private readonly participantRepository: ParticipantRepository
+        private readonly participantRepository: ParticipantRepository,
+        private readonly userService: UserService
     ) { }
 
     public async getCourseInfo(userId: string, courseId: number) {
-        const courseInfo = new CourseInfoDTO();
+        let courseInfo: any = {};
         const course = await this.courseRepository.findOne({ where: { id: courseId } });
 
-        if(!course){
-            throw new NotFoundException() ;
+        if (!course) {
+            throw new NotFoundException();
         }
 
         courseInfo.title = course.title;
         courseInfo.description = course.description;
-        courseInfo.authorId = course.authorId;
+        // courseInfo.authorId = course.authorId;
 
         const listLesson = await this.lessonRepository.getLessonByCourseId(courseId);
         const lessonsOfCourse = listLesson.map((lesson) => {
@@ -35,6 +36,7 @@ export class LessonService {
             lessonInfo.courseId = courseId;
             lessonInfo.description = lesson.description;
             lessonInfo.title = lesson.title;
+            lessonInfo.type = lesson.type;
             return lessonInfo;
         });
 
@@ -48,14 +50,16 @@ export class LessonService {
         if (!currentLesson) {
             courseInfo.currentLesson = listLesson[0]!.id;
         } else {
-            if (currentLesson.can_study!=null) {
+            if (currentLesson.can_study != null) {
                 courseInfo.currentLesson = currentLesson.currentLesson;
-            }else{
+            } else {
                 courseInfo.currentLesson = listLesson[0]!.id;
             }
         }
 
         courseInfo.listLesson = lessonsOfCourse;
+
+        courseInfo.author = await this.userService.getUserInfo(course.authorId);
 
         return courseInfo;
     }

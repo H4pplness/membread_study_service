@@ -11,12 +11,10 @@ import { Learning } from './database/entities/learning.entity';
 import { Lesson } from './database/entities/lesson.entity';
 import { Attribute } from './database/entities/attribute.entity';
 import { LearningAttribute } from './database/entities/learning_attribute.entity';
-import { CourseService } from './services/course-service/course.service';
 import { CourseProgress } from './database/entities/course_progress.entity';
 import { Participant } from './database/entities/participant.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ArchievementModule } from './modules/archievement-module/archievement.module';
-import { CourseController } from './controllers/course.controller';
 
 
 @Module({
@@ -46,8 +44,7 @@ import { CourseController } from './controllers/course.controller';
   ],
   controllers: [
     AppController,
-    CourseController
   ],
-  providers: [AppService, LessonRepository, CourseService],
+  providers: [AppService, LessonRepository],
 })
 export class AppModule { }

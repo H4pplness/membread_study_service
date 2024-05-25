@@ -19,13 +19,18 @@ import { LessonController } from './controllers/lesson.controller';
 import { LessonService } from './services/lesson.service';
 import { LessonRepository } from './repositories/lesson.repository';
 import { ParticipantRepository } from './repositories/participant.repository';
+import { StudyGrammarController } from './controllers/study-grammar.controller';
+import { GrammarRepository } from './repositories/grammar.repository';
+import { GrammarService } from './services/grammar.service';
+import { UserServiceModule } from '../user-service-module/user_service.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Course, Learning, Lesson, Attribute, LearningAttribute, CourseProgress, Participant]),
-        ArchievementModule
+        ArchievementModule,
+        UserServiceModule
     ],
-    controllers: [StudyVocabularyController,LessonController],
-    providers: [VocabularyService,VocabularyRepository,LessonRepository,LessonService,ParticipantRepository],
+    controllers: [StudyVocabularyController,LessonController,StudyGrammarController],
+    providers: [VocabularyService,VocabularyRepository,LessonRepository,LessonService,ParticipantRepository,GrammarRepository,GrammarService],
 })
 export class StudyModule {}
