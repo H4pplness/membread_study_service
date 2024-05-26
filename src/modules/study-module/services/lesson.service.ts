@@ -75,4 +75,8 @@ export class LessonService {
     public async selectLesson(userId: number, lessonId: number, course: number) {
 
     }
+
+    public async getPopularCourse(){
+        return await this.lessonRepository.getPopularCourse();
+    }
 }

@@ -20,7 +20,7 @@ export class StudyVocabularyController {
      * @returns tạo mới 1 bài học từ vựng 
      */
     @MessagePattern('create-lesson-vocabulary')
-    async createLessonVocabulary(data : {createLessonVocabulary: CreateLessonVocabularyDTO}) {
+    async createLessonVocabulary(data : {createLessonVocabulary: CreateLessonVocabularyDTO  }) {
         try{
             const result = await this.vocabularyService.createLesson(data.createLessonVocabulary);
             return "Create lesson success !";

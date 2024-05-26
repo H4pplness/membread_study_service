@@ -17,6 +17,8 @@ export class SetupParticipantRepository extends Repository<Participant>{
     }
 
     public async joinCourse(participant_id: string, course_id: number) {
+        console.log("PARTICIPANTID : ",participant_id);
+        console.log("COURSEID : ",course_id);
         const participant = await this.participantRepository.findOne({
             where : {
                 participant_id : participant_id,

@@ -48,4 +48,16 @@ export class LessonRepository extends Repository<Lesson>{
     {
         
     }
+
+    async getPopularCourse()
+    {
+
+        return await this.dataSource.createQueryBuilder(Course,'course')
+            .select('course.id as id , course.title  as title, course.description as description, course.rating as rating, course.author_id as author_id')
+            .addSelect('COUNT(participant.participant_id) as number_of_participants')
+            .innerJoin('participant','participant','participant.course_id = course.id')
+            .groupBy('course.id')
+            .limit(10)
+            .getRawMany();
+    }
 }

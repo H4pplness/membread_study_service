@@ -18,7 +18,7 @@ export class LessonController {
     }
 
     @MessagePattern('learning-courses')
-    async getLearningLesson(data : {userId : string})
+    async getLearningCourses(data : {userId : string})
     {
         return await this.lessonService.getLearningCourse(data.userId);
     }
@@ -27,6 +27,12 @@ export class LessonController {
     async getTeachingCourse(data : {userId : string})
     {
         return await this.lessonService.getTeachingCourse(data.userId);
+    }
+
+    @MessagePattern('popular-courses')
+    async getPopularCourses()
+    {
+        return await this.lessonService.getPopularCourse();
     }
 
 }

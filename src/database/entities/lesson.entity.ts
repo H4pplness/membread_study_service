@@ -10,7 +10,7 @@ export class Lesson extends BaseEntity {
     @Column()
     title: string;
 
-    @Column()
+    @Column({nullable : true})
     description: string;
 
     @Column({default : 1})
