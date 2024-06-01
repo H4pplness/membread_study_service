@@ -14,34 +14,35 @@ import { CourseProgress } from "src/database/entities/course_progress.entity";
 import { Participant } from "src/database/entities/participant.entity";
 
 @Injectable()
-export class VocabularyRepository {
+export class VocabularyRepository extends Repository<Learning> {
     constructor(
         @InjectRepository(Course)
-        private readonly courseRepository : Repository<Course>,
+        private readonly courseRepository: Repository<Course>,
         @InjectRepository(Lesson)
-        private readonly lessonRepository : Repository<Lesson>,
+        private readonly lessonRepository: Repository<Lesson>,
         @InjectRepository(Learning)
-        private readonly learningRepository : Repository<Learning>,
+        private readonly learningRepository: Repository<Learning>,
         @InjectRepository(Attribute)
-        private readonly attributeRepository : Repository<Attribute>,
+        private readonly attributeRepository: Repository<Attribute>,
         @InjectRepository(LearningAttribute)
-        private readonly learningAttributeRepository : Repository<LearningAttribute>,
+        private readonly learningAttributeRepository: Repository<LearningAttribute>,
         @InjectRepository(CourseProgress)
-        private readonly courseProgressRepository : Repository<CourseProgress>,
+        private readonly courseProgressRepository: Repository<CourseProgress>,
         @InjectDataSource()
-        private dataSource : DataSource,
+        private dataSource: DataSource,
         @InjectRepository(Participant)
-        private readonly participantRepository : Repository<Participant>
-    ){}
+        private readonly participantRepository: Repository<Participant>
+    ) {
+        super(learningRepository.target, learningRepository.manager, learningRepository.queryRunner);
+    }
 
-    async createLesson(createLesson : CreateLessonVocabularyDTO)
-    {
-        console.log("COURSE ID :",createLesson.courseId)
+    async createLesson(createLesson: CreateLessonVocabularyDTO) {
+        console.log("COURSE ID :", createLesson.courseId)
         const course = await this.courseRepository.findOne({
-            where : { id : createLesson.courseId}
+            where: { id: createLesson.courseId }
         })
 
-        if(!course){
+        if (!course) {
             throw new Error("Not found with id = " + createLesson.courseId);
         }
 
@@ -51,19 +52,19 @@ export class VocabularyRepository {
         lesson.course = course;
         lesson.save();
 
-        const learnings : Learning[] = [];
-        const learning_attributes : LearningAttribute[] = [];
-        
-        const vocabulary_attr = await Attribute.findOne({where : {id : 1}});
-        const mean_attr = await Attribute.findOne({where : {id : 2}});
+        const learnings: Learning[] = [];
+        const learning_attributes: LearningAttribute[] = [];
 
-        for (const vocabulary of createLesson.listVocabulary){
+        const vocabulary_attr = await Attribute.findOne({ where: { id: 1 } });
+        const mean_attr = await Attribute.findOne({ where: { id: 2 } });
+
+        for (const vocabulary of createLesson.listVocabulary) {
             const learning = new Learning();
             learning.lesson = lesson;
             learning.learningType = await getLearningType(LEARNING_TYPE.VOCABULARY);
             learnings.push(learning);
 
-            console.log("VOCABULARY : ",vocabulary);
+            console.log("VOCABULARY : ", vocabulary);
 
             const learningVocabulary = new LearningAttribute();
             const learningMean = new LearningAttribute();
@@ -86,56 +87,55 @@ export class VocabularyRepository {
         return lesson;
     }
 
-    async getLesson(lesson_id : number,userId : string)
-    {
-        return await this.dataSource.createQueryBuilder(Learning,'learning')
-        .select('learning.learning_type as type,learning.id as id')
-        .addSelect('learning_attribute.value as value')
-        .addSelect('attribute.attribute_name as attribute')
-        .addSelect('course_progress.progress as progress')
-        .innerJoin('learning_attribute','learning_attribute','learning.id = learning_attribute.learning_id')
-        .innerJoin('attribute','attribute','learning_attribute.attribute_id = attribute.id')
-        .leftJoin('course_progress','course_progress',"learning.id = course_progress.learning_id AND course_progress.participant_id ='"+userId+"'")
-        .where('learning.lesson_id = '+lesson_id)
-        .orderBy('learning.id')
-        .getRawMany();
+    async getLesson(lesson_id: number, userId: string) {
+        return await this.dataSource.createQueryBuilder(Learning, 'learning')
+            .select('learning.learning_type as type,learning.id as id')
+            .addSelect('learning_attribute.value as value')
+            .addSelect('attribute.attribute_name as attribute')
+            .addSelect('course_progress.progress as progress')
+            .innerJoin('learning_attribute', 'learning_attribute', 'learning.id = learning_attribute.learning_id')
+            .innerJoin('attribute', 'attribute', 'learning_attribute.attribute_id = attribute.id')
+            .leftJoin('course_progress', 'course_progress', "learning.id = course_progress.learning_id AND course_progress.participant_id ='" + userId + "'")
+            .where('learning.lesson_id = ' + lesson_id)
+            .orderBy('learning.id')
+            .getRawMany();
     }
 
-    async getStudyLesson(lesson_id : number,goal : number)
-    {
-        return await this.dataSource.createQueryBuilder(Learning,'learning')
-        .select('learning.learning_type as type,learning.id as id')
-        .addSelect('learning_attribute.value as value')
-        .addSelect('attribute.attribute_name as attribute')
-        .addSelect('course_progress.progress as progress')
-        .innerJoin('learning_attribute','learning_attribute','learning.id = learning_attribute.learning_id')
-        .innerJoin('attribute','attribute','learning_attribute.attribute_id = attribute.id')
-        .leftJoin('course_progress','course_progress','learning.id = course_progress.learning_id')
-        .where('learning.lesson_id = '+lesson_id +' AND (course_progress.progress IS NULL OR course_progress.progress < 3 )')
-        .orderBy('learning.id')
-        .limit(goal*2)
-        .getRawMany();
+    async getStudyLesson(lesson_id: number, goal: number) {
+        return await this.dataSource.createQueryBuilder(Learning, 'learning')
+            .select('learning.learning_type as type,learning.id as id')
+            .addSelect('learning_attribute.value as value')
+            .addSelect('attribute.attribute_name as attribute')
+            .addSelect('course_progress.progress as progress')
+            .innerJoin('learning_attribute', 'learning_attribute', 'learning.id = learning_attribute.learning_id')
+            .innerJoin('attribute', 'attribute', 'learning_attribute.attribute_id = attribute.id')
+            .leftJoin('course_progress', 'course_progress', 'learning.id = course_progress.learning_id')
+            .where('learning.lesson_id = ' + lesson_id + ' AND (course_progress.progress IS NULL OR course_progress.progress < 3 )')
+            .orderBy('learning.id')
+            .limit(goal * 2)
+            .getRawMany();
     }
 
-    public async getPracticeLesson(lesson_id : number,numberOfLearning : number){
-        return await this.dataSource.createQueryBuilder(Learning,'learning')
-        .select('learning.learning_type as type,learning.id as id')
-        .addSelect('learning_attribute.value as value')
-        .addSelect('attribute.attribute_name as attribute')
-        .addSelect('course_progress.progress as progress')
-        .innerJoin('learning_attribute','learning_attribute','learning.id = learning_attribute.learning_id')
-        .innerJoin('attribute','attribute','learning_attribute.attribute_id = attribute.id')
-        .leftJoin('course_progress','course_progress','learning.id = course_progress.learning_id')
-        .where('learning.lesson_id = '+lesson_id +' AND course_progress.progress > 2 )')
-        .orderBy('course_progress.id')
-        .limit(numberOfLearning*2)
-        .getRawMany();
+    public async getPracticeLesson(lesson_id: number, numberOfLearning: number) {
+        return await this.dataSource.createQueryBuilder(Learning, 'learning')
+            .select('learning.learning_type as type,learning.id as id')
+            .addSelect('learning_attribute.value as value')
+            .addSelect('attribute.attribute_name as attribute')
+            .addSelect('course_progress.progress as progress')
+            .innerJoin('learning_attribute', 'learning_attribute', 'learning.id = learning_attribute.learning_id')
+            .innerJoin('attribute', 'attribute', 'learning_attribute.attribute_id = attribute.id')
+            .leftJoin('course_progress', 'course_progress', 'learning.id = course_progress.learning_id')
+            .where('learning.lesson_id = ' + lesson_id + ' AND course_progress.progress > 2 )')
+            .orderBy('course_progress.id')
+            .limit(numberOfLearning * 2)
+            .getRawMany();
     }
 
-    public async updateStudyLesson(updateLesson : UpdateProgressLessonVocabularyDTO){
-        const list_progress : CourseProgress[] = [];
+    public async updateStudyLesson(updateLesson: UpdateProgressLessonVocabularyDTO) {
 
-        updateLesson.listVocabulary.forEach((voca_progress)=>{
+        const list_progress: CourseProgress[] = [];
+
+        updateLesson.listVocabulary.forEach((voca_progress) => {
             const progress = new CourseProgress();
             progress.learningId = voca_progress.learning_id;
             progress.participantId = updateLesson.user_id;
@@ -145,16 +145,16 @@ export class VocabularyRepository {
         })
 
         const participant = await this.participantRepository.findOne({
-            where : {
-                participant_id : updateLesson.user_id,
-                course_id : updateLesson.course_id
+            where: {
+                participant_id: updateLesson.user_id,
+                course_id: updateLesson.course_id
             }
         })
 
         participant.last_studied = new Date();
         await this.courseProgressRepository.save(list_progress);
         await participant.save();
-        
+
         return list_progress;
     }
 }

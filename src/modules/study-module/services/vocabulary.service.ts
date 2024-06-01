@@ -163,6 +163,9 @@ export class VocabularyService {
 
     public async setStudyLesson(updateLesson : UpdateProgressLessonVocabularyDTO)
     {
+        const firstLearningID = await this.vocabularyRepository.findOne({ where: { id: updateLesson.listVocabulary[0].learning_id }, relations: ["lesson","lesson.course"] });
+        const currentLesson = firstLearningID.lesson;
+        updateLesson.course_id = currentLesson.course.id;
         this.archievementClient.emit('updated.score',{courseId : updateLesson.course_id , score : updateLesson.score , userId : updateLesson.user_id})
         
         return await this.vocabularyRepository.updateStudyLesson(updateLesson);

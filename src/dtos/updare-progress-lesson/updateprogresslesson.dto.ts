@@ -1,10 +1,8 @@
 import { IsNotEmpty } from "class-validator";
 
-export class UpdateProgressLessonDTO {
-    @IsNotEmpty()
+export class UpdateProgressLessonDTO {    
     course_id : number;
 
-    @IsNotEmpty()
     lesson_id? : number;
 
     user_id? : string;
