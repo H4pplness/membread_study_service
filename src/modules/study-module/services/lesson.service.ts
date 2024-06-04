@@ -27,6 +27,7 @@ export class LessonService {
 
         courseInfo.title = course.title;
         courseInfo.description = course.description;
+        courseInfo.avatar = course.avatar;
         // courseInfo.authorId = course.authorId;
 
         const listLesson = await this.lessonRepository.getLessonByCourseId(courseId);
@@ -48,11 +49,14 @@ export class LessonService {
         });
 
         if (!currentLesson) {
+            courseInfo.canStudy = false;
             courseInfo.currentLesson = listLesson[0]!.id;
         } else {
-            if (currentLesson.can_study != null) {
+            if (currentLesson.can_study) {
+                courseInfo.canStudy = true;
                 courseInfo.currentLesson = currentLesson.currentLesson;
             } else {
+                courseInfo.canStudy = false;
                 courseInfo.currentLesson = listLesson[0]!.id;
             }
         }
@@ -72,11 +76,24 @@ export class LessonService {
         return await this.lessonRepository.getTeachingCourse(userId);
     }
 
+    public async getRecentCourse(userId:string ,limit : number){
+        return await this.lessonRepository.getRecentCourse(userId,limit);
+    };
+
     public async selectLesson(userId: number, lessonId: number, course: number) {
 
     }
 
-    public async getPopularCourse(){
-        return await this.lessonRepository.getPopularCourse();
+    public async getPopularCourse(userId : string){
+        const popularCourses = await this.lessonRepository.getPopularCourse();
+        const learningCourses = await this.lessonRepository.getUserLearningLesson(userId);
+
+        return popularCourses.map((course)=>{
+          if(learningCourses.find((learningCourse)=>learningCourse.id === course.id)){
+            return {...course,canStudy : true}
+          } else{
+            return {...course,canStudy : false}
+          } 
+        })
     }
 }

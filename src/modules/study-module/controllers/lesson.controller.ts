@@ -30,9 +30,14 @@ export class LessonController {
     }
 
     @MessagePattern('popular-courses')
-    async getPopularCourses()
+    async getPopularCourses(data : {userId : string})
     {
-        return await this.lessonService.getPopularCourse();
+        return await this.lessonService.getPopularCourse(data.userId);
+    }
+
+    @MessagePattern('get-recent-course')
+    async getRecentCourse(data : {userId : string,limit : number}){
+        return await this.lessonService.getRecentCourse(data.userId,data.limit);
     }
 
 }

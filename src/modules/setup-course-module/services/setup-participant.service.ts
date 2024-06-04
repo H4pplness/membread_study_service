@@ -3,6 +3,8 @@ import { SetupParticipantRepository } from "../repositories/setup-participant.re
 import { CreateCourseDTO } from "src/dtos/createcourse.dto";
 import { Course } from "src/database/entities/course.entity";
 import { Participant } from "src/database/entities/participant.entity";
+import { UpdateCourseInfoDTO } from "src/dtos/update_course_info.dto";
+import { UploadCourseAvatarDTO } from "src/dtos/uploadcourseavatar.dto";
 
 @Injectable()
 export class SetupParticipantService {
@@ -12,7 +14,11 @@ export class SetupParticipantService {
 
     public async joinCourse(participant_id: string, course_id: number) {
         const result = await this.setupParticipantRepository.joinCourse(participant_id, course_id);
-        return result;
+        if(result.can_study){
+            return {"message" : "Subcribed"};
+        }else{
+            return {"message" : "Unsubcribed"};
+        }
     }
 
     public async createCourse(createCourse: CreateCourseDTO, userId: string) {
@@ -36,7 +42,13 @@ export class SetupParticipantService {
         } catch (error) {
             throw new BadRequestException(error)
         }
+    }
 
+    public async updateCourse(userId : string , updateCourse : UpdateCourseInfoDTO){
+        return await this.setupParticipantRepository.updateCourse(userId,updateCourse);
+    }
 
+    public async updateAvatar(data: UploadCourseAvatarDTO) {
+        return await this.setupParticipantRepository.saveAvatar(data);
     }
 }

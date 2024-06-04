@@ -9,16 +9,16 @@ export class Participant extends BaseEntity{
     @PrimaryColumn()
     course_id : number;
 
-    @Column({default : 0})
+    @Column({default : false})
     can_edit : boolean
 
-    @Column({default : 0})
+    @Column({default : false})
     can_study : boolean
 
-    @Column({default : 0})
+    @Column({default : false})
     can_remove_participant : boolean
 
-    @Column({default : 0})
+    @Column({default : false})
     can_add_admin : boolean
     
     @DeleteDateColumn()

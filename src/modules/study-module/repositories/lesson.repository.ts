@@ -30,10 +30,24 @@ export class LessonRepository extends Repository<Lesson>{
     {
         return await this.dataSource.createQueryBuilder(Participant,'participant')
             .select('participant.course_id as id')
-            .addSelect('course.title,course.description,course.rating')
+            .addSelect('course.title,course.description,course.rating,course.avatar')
             .innerJoin('course','course','participant.course_id = course.id')
             .where("participant.participant_id ='"+userId+"'")
+            .andWhere("participant.can_study = true")
             .orderBy("participant.last_studied",'DESC')
+            .getRawMany();
+    }
+
+    async getRecentCourse(userId : string,limit : number)
+    {
+        return await this.dataSource.createQueryBuilder(Participant,'participant')
+            .select('participant.course_id as id')
+            .addSelect('course.title,course.description,course.rating,course.avatar')
+            .innerJoin('course','course','participant.course_id = course.id')
+            .where("participant.participant_id ='"+userId+"'")
+            .andWhere("participant.can_study = true")
+            .orderBy("participant.last_studied",'DESC')
+            .limit(limit)
             .getRawMany();
     }
 
@@ -44,16 +58,11 @@ export class LessonRepository extends Repository<Lesson>{
         })
     }
 
-    async getCurrentLesson(participantId : number , courseId : number)
-    {
-        
-    }
-
     async getPopularCourse()
     {
 
         return await this.dataSource.createQueryBuilder(Course,'course')
-            .select('course.id as id , course.title  as title, course.description as description, course.rating as rating, course.author_id as author_id')
+            .select('course.id as id , course.title  as title, course.description as description, course.rating as rating, course.author_id as author_id,course.avatar as avatar')
             .addSelect('COUNT(participant.participant_id) as number_of_participants')
             .innerJoin('participant','participant','participant.course_id = course.id')
             .groupBy('course.id')
