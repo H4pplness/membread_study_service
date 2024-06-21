@@ -5,10 +5,8 @@ import { Course } from "src/database/entities/course.entity";
 import { Learning } from "src/database/entities/learning.entity";
 import { LearningAttribute } from "src/database/entities/learning_attribute.entity";
 import { Lesson } from "src/database/entities/lesson.entity";
-import { DataSource, Int32, Repository } from "typeorm";
-import { CreateLessonDTO } from "../../../dtos/create-lessons/createlesson.dto";
+import { DataSource, Repository } from "typeorm";
 import { CreateLessonVocabularyDTO } from "../../../dtos/create-lessons/createlessonvocabulary.dto";
-import { LEARNING_TYPE, getLearningType } from "src/database/const/learning-type.const";
 import { UpdateProgressLessonVocabularyDTO } from "../../../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto";
 import { CourseProgress } from "src/database/entities/course_progress.entity";
 import { Participant } from "src/database/entities/participant.entity";
@@ -50,6 +48,7 @@ export class VocabularyRepository extends Repository<Learning> {
         lesson.title = createLesson.title;
         lesson.description = createLesson.description;
         lesson.course = course;
+        lesson.type = 'vocabulary';
         lesson.save();
 
         const learnings: Learning[] = [];
@@ -61,7 +60,7 @@ export class VocabularyRepository extends Repository<Learning> {
         for (const vocabulary of createLesson.listVocabulary) {
             const learning = new Learning();
             learning.lesson = lesson;
-            learning.learningType = await getLearningType(LEARNING_TYPE.VOCABULARY);
+            learning.type = 'vocabulary';
             learnings.push(learning);
 
             console.log("VOCABULARY : ", vocabulary);
@@ -85,20 +84,6 @@ export class VocabularyRepository extends Repository<Learning> {
         await this.learningAttributeRepository.save(learning_attributes);
 
         return lesson;
-    }
-
-    async getLesson(lesson_id: number, userId: string) {
-        return await this.dataSource.createQueryBuilder(Learning, 'learning')
-            .select('learning.learning_type as type,learning.id as id')
-            .addSelect('learning_attribute.value as value')
-            .addSelect('attribute.attribute_name as attribute')
-            .addSelect('course_progress.progress as progress')
-            .innerJoin('learning_attribute', 'learning_attribute', 'learning.id = learning_attribute.learning_id')
-            .innerJoin('attribute', 'attribute', 'learning_attribute.attribute_id = attribute.id')
-            .leftJoin('course_progress', 'course_progress', "learning.id = course_progress.learning_id AND course_progress.participant_id ='" + userId + "'")
-            .where('learning.lesson_id = ' + lesson_id)
-            .orderBy('learning.id')
-            .getRawMany();
     }
 
     async getStudyLesson(lesson_id: number, goal: number) {

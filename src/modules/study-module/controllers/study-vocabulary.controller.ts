@@ -7,11 +7,13 @@ import { CreateLessonVocabularyDTO } from '../../../dtos/create-lessons/createle
 import { VocabularyService } from '../services/vocabulary.service';
 import { UpdateProgressLessonVocabularyDTO } from '../../../dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto';
 import { MessagePattern } from '@nestjs/microservices';
+import { LessonService } from '../services/lesson.service';
 
 @Controller('')
 export class StudyVocabularyController {
     constructor(
-        private readonly vocabularyService: VocabularyService
+        private readonly vocabularyService: VocabularyService,
+        private readonly lessonService : LessonService
     ) { }
     
     /**
@@ -24,21 +26,6 @@ export class StudyVocabularyController {
         try{
             const result = await this.vocabularyService.createLesson(data.createLessonVocabulary);
             return "Create lesson success !";
-        }catch(error){
-            return error;
-        }
-    }
-
-    /**
-     *  @param params id
-     *  Lấy 1 bài học từ vựng
-     */
-    @MessagePattern('get-lesson-vocabulary')
-    async getLessonVocabulary(data : {lessonId : number,userId : string}) {
-        try{
-            const result = await this.vocabularyService.getLesson(data.lessonId,data.userId);
-            console.log("RESULT : ",result);
-            return JSON.stringify(result);
         }catch(error){
             return error;
         }

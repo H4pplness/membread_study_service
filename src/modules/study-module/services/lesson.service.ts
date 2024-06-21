@@ -6,6 +6,7 @@ import { Course } from "src/database/entities/course.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ParticipantRepository } from "../repositories/participant.repository";
 import { UserService } from "src/modules/user-service-module/user.service";
+import { Lesson } from "src/database/entities/lesson.entity";
 
 @Injectable()
 export class LessonService {
@@ -50,14 +51,11 @@ export class LessonService {
 
         if (!currentLesson) {
             courseInfo.canStudy = false;
-            courseInfo.currentLesson = listLesson[0]!.id;
         } else {
             if (currentLesson.can_study) {
                 courseInfo.canStudy = true;
-                courseInfo.currentLesson = currentLesson.currentLesson;
             } else {
                 courseInfo.canStudy = false;
-                courseInfo.currentLesson = listLesson[0]!.id;
             }
         }
 
@@ -95,5 +93,44 @@ export class LessonService {
             return {...course,canStudy : false}
           } 
         })
+    }
+
+    public async getLesson(lesson_id : number,userId : string)
+    {
+        console.log("LESSON ID : ",lesson_id);
+        const lesson = await Lesson.findOne({where : {id : lesson_id}});
+        if(!lesson)
+        {
+            throw new NotFoundException()
+        }
+
+        const getLesson : any = {};
+        getLesson.title = lesson.title;
+        getLesson.description = lesson.description;
+        getLesson.type = lesson.type;
+        const learnings = await this.lessonRepository.getLesson(lesson_id,userId);
+        console.log("LEARNINGS : ",JSON.stringify(learnings));
+        
+        const mergedData = {};
+        
+        learnings.forEach(item => {
+            const itemId = item.id;
+            
+            if (!mergedData[itemId]) {
+                mergedData[itemId] = { id: itemId };
+            }
+            
+            mergedData[itemId][item.attribute] = item.value;
+
+            if (!("progress" in mergedData[itemId])) {
+                mergedData[itemId]["progress"] = item.progress;
+            }
+        });
+
+        const result = Object.values(mergedData);
+
+        getLesson.listVocabulary = result;
+
+        return getLesson;
     }
 }

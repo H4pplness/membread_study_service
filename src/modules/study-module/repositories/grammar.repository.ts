@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { LEARNING_TYPE, getLearningType } from "src/database/const/learning-type.const";
 import { Attribute } from "src/database/entities/attribute.entity";
 import { Course } from "src/database/entities/course.entity";
 import { CourseProgress } from "src/database/entities/course_progress.entity";

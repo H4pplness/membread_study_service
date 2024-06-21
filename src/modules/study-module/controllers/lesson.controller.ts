@@ -40,4 +40,9 @@ export class LessonController {
         return await this.lessonService.getRecentCourse(data.userId,data.limit);
     }
 
+    @MessagePattern('get-lesson')
+    async getLesson(data : {userId : string, lessonId : number}){
+        return await this.lessonService.getLesson(data.lessonId,data.userId);
+    }
+
 }

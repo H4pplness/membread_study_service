@@ -5,7 +5,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LessonRepository } from './repositories/lesson.repository';
 import { Course } from './database/entities/course.entity';
 import { Learning } from './database/entities/learning.entity';
 import { Lesson } from './database/entities/lesson.entity';
@@ -15,6 +14,7 @@ import { CourseProgress } from './database/entities/course_progress.entity';
 import { Participant } from './database/entities/participant.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ArchievementModule } from './modules/archievement-module/archievement.module';
+import { RatingModule } from './modules/rating-module/rating.module';
 
 
 @Module({
@@ -23,6 +23,7 @@ import { ArchievementModule } from './modules/archievement-module/archievement.m
     StudyModule,
     ConfigModule,
     ArchievementModule,
+    RatingModule,
     ClientsModule.register(
       [
           {
@@ -45,6 +46,6 @@ import { ArchievementModule } from './modules/archievement-module/archievement.m
   controllers: [
     AppController,
   ],
-  providers: [AppService, LessonRepository],
+  providers: [AppService],
 })
 export class AppModule { }

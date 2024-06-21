@@ -23,6 +23,9 @@ import { StudyGrammarController } from './controllers/study-grammar.controller';
 import { GrammarRepository } from './repositories/grammar.repository';
 import { GrammarService } from './services/grammar.service';
 import { UserServiceModule } from '../user-service-module/user_service.module';
+import { StudyTestController } from './controllers/study-test.controller';
+import { TestRepository } from './repositories/test.repository';
+import { TestService } from './services/test.service';
 
 @Module({
     imports: [
@@ -30,7 +33,7 @@ import { UserServiceModule } from '../user-service-module/user_service.module';
         ArchievementModule,
         UserServiceModule
     ],
-    controllers: [StudyVocabularyController,LessonController,StudyGrammarController],
-    providers: [VocabularyService,VocabularyRepository,LessonRepository,LessonService,ParticipantRepository,GrammarRepository,GrammarService],
+    controllers: [StudyVocabularyController,LessonController,StudyGrammarController,StudyTestController],
+    providers: [VocabularyService,VocabularyRepository,LessonRepository,LessonService,ParticipantRepository,GrammarRepository,GrammarService,TestRepository,TestService],
 })
 export class StudyModule {}

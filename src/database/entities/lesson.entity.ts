@@ -13,7 +13,7 @@ export class Lesson extends BaseEntity {
     @Column({nullable : true})
     description: string;
 
-    @Column({default : 1})
+    @Column({default : 'vocabulary'})
     type : string
 
     @ManyToOne(() => Course, course => course.lessons)

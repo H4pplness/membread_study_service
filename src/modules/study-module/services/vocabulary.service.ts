@@ -22,55 +22,6 @@ export class VocabularyService {
         return await this.vocabularyRepository.createLesson(createLesson);
     }
 
-    public async getLesson(lesson_id : number,userId : string)
-    {
-        const lesson = await Lesson.findOne({where : {id : lesson_id}});
-        if(!lesson)
-        {
-            throw new NotFoundException()
-        }
-        /**
-         * Nếu có thêm bài học khác ngoài từ vựng thì phải code thêm
-         */ 
-        const getLesson = new GetLessonVocabularyDTO();
-        getLesson.title = lesson.title;
-        getLesson.description = lesson.description;
-        const learnings = await this.vocabularyRepository.getLesson(lesson_id,userId);
-
-        const listVocabulary : VocabularyDTO[] = []
-        
-        learnings.forEach((item)=>{
-            const voca_index = listVocabulary.findIndex((vocabulary)=>vocabulary.id === item.id)
-            if(voca_index === -1){
-                if(item.attribute == 'vocabulary'){
-                    listVocabulary.push({
-                        id : item.id,
-                        vocabulary : item.value,
-                        mean : '',
-                        progress : item.progress
-                    })
-                }else{
-                    listVocabulary.push({
-                        id : item.id,
-                        mean : item.value,
-                        vocabulary : '',
-                        progress : item.progress
-                    })
-                }
-            }else{
-                if(item.attribute == 'vocabulary'){
-                    listVocabulary[voca_index]["vocabulary"] = item.value??''
-                }else{
-                    listVocabulary[voca_index]["mean"] = item.value??''
-                }
-            }
-        })
-
-        getLesson.listVocabulary = listVocabulary;
-
-        return getLesson;
-    }
-
     public async getStudyLesson(lesson_id : number,goal : number)
     {
         const lesson = await Lesson.findOne({where : {id : lesson_id}});
@@ -126,6 +77,8 @@ export class VocabularyService {
         getLesson.title = lesson.title;
         getLesson.description = lesson.description;
         const learnings = await this.vocabularyRepository.getPracticeLesson(lesson_id,numberOfLearning);
+
+        console.log("LEARNINGS : ",JSON.stringify(learnings));
 
         const listVocabulary : VocabularyDTO[] = []
         

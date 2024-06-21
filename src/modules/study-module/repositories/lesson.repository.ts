@@ -5,6 +5,7 @@ import { Lesson } from "src/database/entities/lesson.entity";
 import { Participant } from "src/database/entities/participant.entity";
 import { DataSource, Repository } from "typeorm";
 import { ParticipantRepository } from "./participant.repository";
+import { Learning } from "src/database/entities/learning.entity";
 
 @Injectable()
 export class LessonRepository extends Repository<Lesson>{
@@ -67,6 +68,20 @@ export class LessonRepository extends Repository<Lesson>{
             .innerJoin('participant','participant','participant.course_id = course.id')
             .groupBy('course.id')
             .limit(10)
+            .getRawMany();
+    }
+
+    async getLesson(lesson_id: number, userId: string) {
+        return await this.dataSource.createQueryBuilder(Learning, 'learning')
+            .select('learning.learning_type as type,learning.id as id')
+            .addSelect('learning_attribute.value as value')
+            .addSelect('attribute.attribute_name as attribute')
+            .addSelect('course_progress.progress as progress')
+            .innerJoin('learning_attribute', 'learning_attribute', 'learning.id = learning_attribute.learning_id')
+            .innerJoin('attribute', 'attribute', 'learning_attribute.attribute_id = attribute.id')
+            .leftJoin('course_progress', 'course_progress', "learning.id = course_progress.learning_id AND course_progress.participant_id ='" + userId + "'")
+            .where('learning.lesson_id = ' + lesson_id)
+            .orderBy('learning.id')
             .getRawMany();
     }
 }
