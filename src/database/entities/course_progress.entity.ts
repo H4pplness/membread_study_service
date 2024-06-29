@@ -8,6 +8,9 @@ export class CourseProgress extends BaseEntity {
     @PrimaryColumn({name : 'learning_id'})
     learningId : number;
 
+    @Column({name : 'need_to_review',default:'false'})
+    needToReview : boolean
+
     @Column({default : 0})
     progress : number;
 

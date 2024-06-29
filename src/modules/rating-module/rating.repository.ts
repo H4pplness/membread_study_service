@@ -9,6 +9,8 @@ export class RatingRepository extends Repository<Rating>{
     }
 
     getAverageRatingByCourseId(courseId: number) {
-        throw new Error("Method not implemented.");
+        return this.ratingRepository.createQueryBuilder('rating')
+            .select("SUM(rate) as rating")
+            .where("course_id = :courseId",{courseId}).getRawOne();
     }   
 }

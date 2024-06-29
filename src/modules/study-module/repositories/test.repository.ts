@@ -61,7 +61,7 @@ export class TestRepository extends Repository<Learning> {
         const shortAnswer_attr = await Attribute.findOne({ where: { attribute_name: 'short-answer' } });
         const correctAnswer_attr = await Attribute.findOne({ where: { attribute_name: 'correct-answer' } });
 
-        for (const question of createLesson.listQuestion) {
+        for (const question of createLesson.listLearning) {
             const learning = new Learning();
             learning.lesson = lesson;
             learning.type = 'test';

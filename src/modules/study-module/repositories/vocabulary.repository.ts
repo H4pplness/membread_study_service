@@ -16,12 +16,8 @@ export class VocabularyRepository extends Repository<Learning> {
     constructor(
         @InjectRepository(Course)
         private readonly courseRepository: Repository<Course>,
-        @InjectRepository(Lesson)
-        private readonly lessonRepository: Repository<Lesson>,
         @InjectRepository(Learning)
         private readonly learningRepository: Repository<Learning>,
-        @InjectRepository(Attribute)
-        private readonly attributeRepository: Repository<Attribute>,
         @InjectRepository(LearningAttribute)
         private readonly learningAttributeRepository: Repository<LearningAttribute>,
         @InjectRepository(CourseProgress)
@@ -57,7 +53,7 @@ export class VocabularyRepository extends Repository<Learning> {
         const vocabulary_attr = await Attribute.findOne({ where: { id: 1 } });
         const mean_attr = await Attribute.findOne({ where: { id: 2 } });
 
-        for (const vocabulary of createLesson.listVocabulary) {
+        for (const vocabulary of createLesson.listLearning) {
             const learning = new Learning();
             learning.lesson = lesson;
             learning.type = 'vocabulary';
@@ -125,6 +121,7 @@ export class VocabularyRepository extends Repository<Learning> {
             progress.learningId = voca_progress.learning_id;
             progress.participantId = updateLesson.user_id;
             progress.progress = voca_progress.progress;
+            progress.needToReview = voca_progress.need_to_review;
             progress.lastUpdated = new Date();
             list_progress.push(progress);
         })
@@ -135,6 +132,14 @@ export class VocabularyRepository extends Repository<Learning> {
                 course_id: updateLesson.course_id
             }
         })
+
+        if (!participant) {
+            return {
+                "message" : `Participant with user_id ${updateLesson.user_id} and course_id ${updateLesson.course_id} not found`,
+                "statusCode" : 404
+            }
+            
+        }
 
         participant.last_studied = new Date();
         await this.courseProgressRepository.save(list_progress);

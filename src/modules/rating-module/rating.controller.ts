@@ -7,7 +7,7 @@ export class RatingController {
     constructor(private readonly ratingService : RatingService){}
 
     @MessagePattern('vote-course')
-    voteCourse(data : {courseId : number,rate : number,userId : string}){
+    voteCourse(data : {courseId : number,rate : boolean,userId : string}){
         return this.ratingService.voteCourse(data.courseId,data.userId,data.rate);
     }
 

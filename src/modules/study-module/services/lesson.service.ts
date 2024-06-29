@@ -7,6 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ParticipantRepository } from "../repositories/participant.repository";
 import { UserService } from "src/modules/user-service-module/user.service";
 import { Lesson } from "src/database/entities/lesson.entity";
+import { RatingService } from "src/modules/rating-module/rating.service";
 
 @Injectable()
 export class LessonService {
@@ -15,7 +16,8 @@ export class LessonService {
         private readonly courseRepository: Repository<Course>,
         private readonly lessonRepository: LessonRepository,
         private readonly participantRepository: ParticipantRepository,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly ratingService : RatingService,
     ) { }
 
     public async getCourseInfo(userId: string, courseId: number) {
@@ -62,7 +64,9 @@ export class LessonService {
         courseInfo.listLesson = lessonsOfCourse;
 
         courseInfo.author = await this.userService.getUserInfo(course.authorId);
-
+        const rating = await this.ratingService.getAverageRatingByCourseId(courseId);
+        courseInfo.rating = rating.rating;
+        console.log("COURSEINFO : ",courseInfo);
         return courseInfo;
     }
 
@@ -124,12 +128,14 @@ export class LessonService {
 
             if (!("progress" in mergedData[itemId])) {
                 mergedData[itemId]["progress"] = item.progress;
+                mergedData[itemId]["need_to_review"] = item.need_to_review;
+                mergedData[itemId]["last_updated"] = item.last_updated;
             }
         });
 
         const result = Object.values(mergedData);
 
-        getLesson.listVocabulary = result;
+        getLesson.listLearning = result;
 
         return getLesson;
     }

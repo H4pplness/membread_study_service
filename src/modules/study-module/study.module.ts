@@ -26,12 +26,14 @@ import { UserServiceModule } from '../user-service-module/user_service.module';
 import { StudyTestController } from './controllers/study-test.controller';
 import { TestRepository } from './repositories/test.repository';
 import { TestService } from './services/test.service';
+import { RatingModule } from '../rating-module/rating.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Course, Learning, Lesson, Attribute, LearningAttribute, CourseProgress, Participant]),
         ArchievementModule,
-        UserServiceModule
+        UserServiceModule,
+        RatingModule
     ],
     controllers: [StudyVocabularyController,LessonController,StudyGrammarController,StudyTestController],
     providers: [VocabularyService,VocabularyRepository,LessonRepository,LessonService,ParticipantRepository,GrammarRepository,GrammarService,TestRepository,TestService],

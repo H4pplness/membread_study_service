@@ -8,6 +8,7 @@ import { RatingRepository } from "./rating.repository";
 @Module({
     imports : [TypeOrmModule.forFeature([Rating])],
     controllers: [RatingController],
-    providers: [RatingService,RatingRepository]
+    providers: [RatingService,RatingRepository],
+    exports: [RatingService]
 })
 export class RatingModule {}
